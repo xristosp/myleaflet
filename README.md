@@ -1,2 +1,6 @@
 # myleaflet
-My first web map in Leaflet
+
+URL for this web app:
+https://xristosp.github.io/myleaflet/
+
+
