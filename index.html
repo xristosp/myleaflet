@@ -260,7 +260,7 @@
 			sumDeaths = 0;
 			for (var i = 0; i < data.features.length; i++) {
 				sum += data.features[i].properties.Confirmed;
-				sumDeaths += children[i].feature.properties.Deaths;
+				sumDeaths += data.features[i].properties.Deaths;
 				//console.log(sum); //number of confirmed cases
 			}
 			document.getElementById("Total").innerHTML = 'Total: ' + sum.toLocaleString();
