@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>COVID-19 US Confirmed</title>
+
+	<style>
+		html, body {
+			height: 100%;
+			width: 100vw;
+			margin: 0;
+			padding: 0;
+			background-image: url("http://gis.p5hq.com/wp-content/uploads/2020/04/what-the-hex.png"); 
+            background-position: center center; 
+            background-size: auto; 
+            background-repeat: repeat; 
+            background-attachment: scroll;
+		}
+		#mapid {
+			z-index: 0;
+			position: absolute;
+			top:0; 
+			bottom:0; 
+			right:0; 
+			left:0;
+			width: 900px;
+			height: 700px;
+		}
+		#navbar {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #f2f2f2;
+            font-size: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            padding: 7px;
+            position: fixed;
+            top: 10px;
+            left: 300px;
+            height: 25px;
+            width: 300px;
+            border: none;
+            border-radius: 8px;
+        }
+		#Total {
+            z-index: 1;
+			background: rgb(248, 248, 248, 0.7);
+			color:rgb(46, 46, 46);
+			font-family: Courier, Arial, Helvetica, sans-serif;
+			font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            position: fixed;
+            top: 60px;
+            left: 100px;
+            width: 220px;
+			}
+	</style>
+	<link rel="stylesheet" href="leaflet.css" />
+	<script src="leaflet.js"></script>
+	<script src="esri-leaflet.js"></script>
+	<link rel="stylesheet" href="dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="dist/MarkerCluster.Default.css" />
+	<script src="dist/leaflet.markercluster-src.js"></script>
+	<script src="dist/esri-leaflet-cluster.js"></script>
+	<script src='dist/Leaflet.fullscreen.min.js'></script>
+	<link rel='stylesheet' href='dist/leaflet.fullscreen.css' />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+	<script>
+		$(document).ready(function(){
+		  $("#navbar").click(function(){
+			$(this).hide();
+		  });
+		});
+	</script>
+
+</head>
+
+<body>
+	<div id="mapid"></div>
+	<div id="navbar">COVID-19: US Confirmed Cases</div>
+	<div id="Total"></div>
+	<style>
+		.marker-cluster-xsmall {
+			background-color: rgba(145,207,96, 0.4);
+			}
+		.marker-cluster-xsmall div {
+			background-color: rgba(145,207,96, 0.8);
+			}
+		.marker-cluster-small {
+			background-color: rgba(217,239,139, 0.4);
+			}
+		.marker-cluster-small div {
+			background-color: rgba(217,239,139, 0.8);
+			}
+		.marker-cluster-medium {
+			background-color: rgba(254,224,139, 0.4);
+			}
+		.marker-cluster-medium div {
+			background-color: rgba(254,224,139, 0.8);
+			}
+		.marker-cluster-large {
+			background-color: rgba(252,141,89, 0.4);
+			}
+		.marker-cluster-large div {
+			background-color: rgba(252,141,89, 0.8);
+			}
+		.marker-cluster-xlarge {
+			background-color: rgba(215,48,39, 0.4);
+			}
+		.marker-cluster-xlarge div {
+			background-color: rgba(215,48,39, 0.8);
+			}
+	</style>
+	<script>
+
+		var mymap = L.map('mapid', {
+			center: [38, -100],
+			zoom: 4
+		});
+
+		var basemaps = {
+			'Streets': L.esri.basemapLayer('Streets'),
+			Topographic: L.esri.basemapLayer('Topographic'),	
+			'Gray': L.esri.basemapLayer('Gray')				
+		};
+
+		L.control.layers(basemaps, {}, {collapsed: false}).addTo(mymap);
+
+		basemaps.Topographic.addTo(mymap);
+		
+		var icons = {
+			redxlg: L.icon({
+				iconUrl: 'icons/firefly_red.png',
+				iconSize: [80, 60],
+			}),
+			redlg: L.icon({
+				iconUrl: 'icons/firefly_red.png',
+				iconSize: [60, 40],
+			}),
+			redmd: L.icon({
+				iconUrl: 'icons/firefly_red.png',
+				iconSize: [40, 30],
+			}),
+			redsm: L.icon({
+				iconUrl: 'icons/firefly_red.png',
+				iconSize: [25, 20],
+			}),
+			redxsm: L.icon({
+				iconUrl: 'icons/firefly_red.png',
+				iconSize: [15, 10],
+			}),
+		};
+
+		var covid = L.esri.Cluster.featureLayer({
+		  url: 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases_US/FeatureServer/0',
+		  where: "Confirmed <> '0'",
+		  iconCreateFunction: function(cluster) {
+			var children = cluster.getAllChildMarkers();
+		 	var sum = 0;
+			for (var i = 0; i < children.length; i++) {
+				sum += children[i].feature.properties.Confirmed;
+			}
+			var childCount = cluster.getChildCount();
+			var c = ' marker-cluster-';
+			if (childCount + sum <= 100) {
+				c += 'xsmall';
+				} else if (childCount + sum <= 1000) {
+				c += 'small';
+				} else if (childCount + sum <= 10000) {
+				c += 'medium';
+				} else if (childCount + sum <= 100000) {
+				c += 'large';				
+				} else {
+				c += 'xlarge';
+			}			
+			return new L.DivIcon({ 
+				html: '<div><span><b>' + sum + '</b></span></div>',
+				className: 'marker-cluster marker-cluster-' + c,
+				iconSize: new L.Point(40, 40)
+			 });
+		},
+		  // Cluster Options
+		  disableClusteringAtZoom: 40,
+		  maxClusterRadius: 40,
+		  polygonOptions: {
+			color: 'red',
+			weight: 1,
+			opacity: 0.7,
+			fillOpacity: 0.3
+		  },		  
+		  // Feature Layer Options
+		  pointToLayer: function (geojson, latlng) {
+			var gradSymbols = (geojson.properties.Confirmed);
+			if (gradSymbols > 1000) {
+				return L.marker(latlng, {
+			  		icon: icons['redxlg']
+				});
+				}
+				else if (gradSymbols > 500) {
+					return L.marker(latlng, {
+						icon: icons['redmd']				
+				});
+				}	  
+				else if (gradSymbols > 100) {
+					return L.marker(latlng, {
+						icon: icons['redmd']				
+				});
+				}
+				else if (gradSymbols > 50) {
+					return L.marker(latlng, {
+						icon: icons['redmd']				
+				});
+				}
+				else {
+					return L.marker(latlng, {
+						icon: icons['redxsm']				
+				});
+				}
+			}
+		}).addTo(mymap);
+		mymap.addControl(new L.Control.Fullscreen());
+
+		// This is to count ALL data since some do not have coordinates associated and will not be accounted for in above functions
+		var staticUrl = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases_US/FeatureServer/0/query?returnGeometry=false&where=Confirmed%3C%3E0&outFields="Confirmed"&f=geojson';
+		$.getJSON(staticUrl, function(data) {
+			console.log(data.features.length); //number of features
+			sum = 0;
+			for (var i = 0; i < data.features.length; i++) {
+				sum += data.features[i].properties.Confirmed;
+				//console.log(sum); //number of confirmed cases
+			}
+			document.getElementById("Total").innerHTML = 'Total: ' + sum.toLocaleString();
+		});
+
+		covid.bindPopup(function (layer) {
+			var featureDate = new Date(layer.feature.properties.Last_Update);
+			return L.Util.template('<table cellpadding="3"><tr bgcolor="#eeeeee"><td><b>State: </b></td><td>{Province_State}</td></tr><tr><td><b>County: </b></td><td>{Admin2}</td></tr><tr bgcolor="#eeeeee"><td><b>Confirmed: </b></td><td>{Confirmed}</td></tr><tr><td><b>Deaths: </b></td><td>{Deaths}</td></tr><tr bgcolor="#eeeeee"><td>Last Update: </td><td>' + featureDate.toDateString() + '<br>' + featureDate.toLocaleTimeString() +'</td></tr></table>',layer.feature.properties);
+		});
+		
+	</script>		
+</body>
+
+</html>
