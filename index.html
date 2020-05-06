@@ -253,7 +253,7 @@
 		mymap.addControl(new L.Control.Fullscreen());
 
 		// This is to count ALL data since some do not have coordinates associated and will not be accounted for in above functions
-		var staticUrl = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases_US/FeatureServer/0/query?returnGeometry=false&where=Confirmed%3C%3E0&outFields="Confirmed"&f=geojson';
+		var staticUrl = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases_US/FeatureServer/0/query?returnGeometry=false&where=Confirmed%3C%3E0&outFields=Confirmed%2C+Deaths&f=geojson';
 		$.getJSON(staticUrl, function(data) {
 			console.log(data.features.length); //number of features
 			sum = 0;
