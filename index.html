@@ -17,7 +17,7 @@
             background-repeat: repeat; 
             background-attachment: scroll;
 		}
-		#mapid {
+	#mapid {
 			z-index: 0;
 			position: absolute;
 			top:0; 
@@ -27,7 +27,7 @@
 			width: 900px;
 			height: 700px;
 		}
-		#navbar {
+	#navbar {
             background-color: rgba(0, 0, 0, 0.3);
             color: #f2f2f2;
             font-size: 20px;
@@ -42,18 +42,31 @@
             border: none;
             border-radius: 8px;
         }
-		#Total {
+	#Total {
             z-index: 1;
-			background: rgb(248, 248, 248, 0.7);
-			color:rgb(46, 46, 46);
-			font-family: Courier, Arial, Helvetica, sans-serif;
-			font-size: 18px;
+		background: rgb(248, 248, 248, 0.7);
+		color:rgb(46, 46, 46);
+		font-family: Courier, Arial, Helvetica, sans-serif;
+		font-size: 18px;
             font-weight: bold;
-            text-align: center;
+            text-align: right;
             position: fixed;
             top: 60px;
             left: 100px;
-            width: 220px;
+            width: 240px;
+			}
+         #TotalDeaths {
+            z-index: 1;
+		background: rgb(248, 248, 248, 0.7);
+		color:rgb(105, 4, 4);
+		font-family: Courier, Arial, Helvetica, sans-serif;
+		font-size:18px;
+            font-weight: bold;
+            text-align: right;
+            position: fixed;
+            top: 90px;
+            left: 100px;
+            width: 240px;
 			}
 	</style>
 
@@ -97,6 +110,7 @@
 	<div id="mapid"></div>
 	<div id="navbar">COVID-19: US Confirmed Cases</div>
 	<div id="Total"></div>
+	<div id="TotalDeaths"></div>
 	<style>
 		.marker-cluster-xsmall {
 			background-color: rgba(145,207,96, 0.4);
@@ -148,23 +162,23 @@
 		
 		var icons = {
 			redxlg: L.icon({
-				iconUrl: 'https://www.p5hq.com/leaflet/icons/firefly_red.png',
+				iconUrl: "http://www.p5hq.com/leaflet/icons/firefly_red.png",
 				iconSize: [80, 60],
 			}),
 			redlg: L.icon({
-				iconUrl: 'https://www.p5hq.com/leaflet/icons/firefly_red.png',
+				iconUrl: "http://www.p5hq.com/leaflet/icons/firefly_red.png",
 				iconSize: [60, 40],
 			}),
 			redmd: L.icon({
-				iconUrl: 'https://www.p5hq.com/leaflet/icons/firefly_red.png',
+				iconUrl: "http://www.p5hq.com/leaflet/icons/firefly_red.png",
 				iconSize: [40, 30],
 			}),
 			redsm: L.icon({
-				iconUrl: 'https://www.p5hq.com/leaflet/icons/firefly_red.png',
+				iconUrl: "http://www.p5hq.com/leaflet/icons/firefly_red.png",
 				iconSize: [25, 20],
 			}),
 			redxsm: L.icon({
-				iconUrl: 'https://www.p5hq.com/leaflet/icons/firefly_red.png',
+				iconUrl: "http://www.p5hq.com/leaflet/icons/firefly_red.png",
 				iconSize: [15, 10],
 			}),
 		};
@@ -175,8 +189,10 @@
 		  iconCreateFunction: function(cluster) {
 			var children = cluster.getAllChildMarkers();
 		 	var sum = 0;
+			var sumDeaths = 0;
 			for (var i = 0; i < children.length; i++) {
 				sum += children[i].feature.properties.Confirmed;
+				sumDeaths += children[i].feature.properties.Deaths;
 			}
 			var childCount = cluster.getChildCount();
 			var c = ' marker-cluster-';
@@ -248,6 +264,7 @@
 				//console.log(sum); //number of confirmed cases
 			}
 			document.getElementById("Total").innerHTML = 'Total: ' + sum.toLocaleString();
+			document.getElementById("TotalDeaths").innerHTML = 'Deaths: ' + sumDeaths.toLocaleString(); 
 		});
 
 		covid.bindPopup(function (layer) {
