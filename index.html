@@ -189,10 +189,8 @@
 		  iconCreateFunction: function(cluster) {
 			var children = cluster.getAllChildMarkers();
 		 	var sum = 0;
-			var sumDeaths = 0;
 			for (var i = 0; i < children.length; i++) {
 				sum += children[i].feature.properties.Confirmed;
-				sumDeaths += children[i].feature.properties.Deaths;
 			}
 			var childCount = cluster.getChildCount();
 			var c = ' marker-cluster-';
@@ -259,8 +257,10 @@
 		$.getJSON(staticUrl, function(data) {
 			console.log(data.features.length); //number of features
 			sum = 0;
+			sumDeaths = 0;
 			for (var i = 0; i < data.features.length; i++) {
 				sum += data.features[i].properties.Confirmed;
+				sumDeaths += children[i].feature.properties.Deaths;
 				//console.log(sum); //number of confirmed cases
 			}
 			document.getElementById("Total").innerHTML = 'Total: ' + sum.toLocaleString();
